@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <title>Battery?</title>
+    <meta property="og:title" content="Battery?" />
+    <meta
+      property="og:description"
+      content="Find out how much battery you have left"
+    />
+    <style>
+      html,
+      body {
+        font-size: 16px;
+        font-family: Arial, Helvetica, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        width: 100%;
+        height: 100%;
+      }
+
+      body {
+        padding: 20px;
+      }
+
+      p {
+        margin: 20px auto;
+      }
+
+      .app {
+        width: 100%;
+        max-width: 320px;
+      }
+
+      .battery {
+        position: relative;
+        height: 0;
+        padding-bottom: 40%;
+        border-radius: 20px;
+        margin-right: 5%;
+      }
+
+      .just-the-tip {
+        position: absolute;
+        top: 50%;
+        left: 100%;
+        width: 3%;
+        height: 30%;
+        border-top-right-radius: 20px;
+        border-bottom-right-radius: 20px;
+        transform: translate(0, -50%);
+      }
+
+      .battery,
+      .just-the-tip {
+        border: 10px solid black;
+      }
+
+      .percentage-wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .percentage {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 100%;
+        background-color: #12ad41;
+        transition: ease-in-out 1s width;
+      }
+
+      .question-mark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        font-size: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app" class="app">
+      <p>You have <strong id="level">some</strong> battery remaining.</p>
+      <div class="battery">
+        <div id="question-mark" class="question-mark">?</div>
+        <div class="percentage-wrapper">
+          <div id="percentage" class="percentage"></div>
+        </div>
+        <div class="just-the-tip"></div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        function noop() {}
+
+        var questionMark = document.getElementById("question-mark");
+        var app = document.getElementById("app");
+        var level = document.getElementById("level");
+        var percentage = document.getElementById("percentage");
+        var time = null;
+
+        function updateBattery() {
+          if ("getBattery" in navigator) {
+            if (questionMark) {
+              questionMark.parentNode.removeChild(questionMark);
+              questionMark = null;
+            }
+
+            navigator
+              .getBattery()
+              .then((result) => {
+                level.textContent = result.level * 100 + "%";
+                percentage.style.width = level.textContent;
+
+                if (!time) {
+                  time = document.createElement("p");
+                  app.appendChild(time);
+                }
+
+                var hours = Math.floor(result.dischargingTime / 60 / 60);
+                var minutes = Math.floor(
+                  result.dischargingTime / 60 - hours * 60
+                );
+                var hourText = hours === 1 ? "hour" : "hours";
+                var minuteText = minutes === 1 ? "minute" : "minutes";
+
+                time.innerHTML =
+                  "That's about <strong>" +
+                  hours +
+                  "</strong> " +
+                  hourText +
+                  " and <strong>" +
+                  minutes +
+                  "</strong> " +
+                  minuteText +
+                  ".";
+
+                window.setTimeout(updateBattery, 1000);
+              })
+              .catch(noop);
+          }
+        }
+
+        updateBattery();
+      })();
+    </script>
+  </body>
+</html>
