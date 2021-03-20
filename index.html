@@ -120,25 +120,31 @@
         var percentage = document.getElementById('percentage');
 
         function updateBattery() {
-          if ('getBattery' in navigator) {
-            if (questionMark) {
-              questionMark.parentNode.removeChild(questionMark);
-              questionMark = null;
-            }
-
-            navigator
-              .getBattery()
-              .then((result) => {
-                level.textContent = result.level * 100 + '%';
-                percentage.style.width = level.textContent;
-
-                window.setTimeout(updateBattery, 1000);
-              })
-              .catch(noop);
+          if (questionMark) {
+            questionMark.parentNode.removeChild(questionMark);
+            questionMark = null;
           }
+
+          navigator
+            .getBattery()
+            .then((result) => {
+              level.textContent = result.level * 100 + '%';
+              percentage.style.width = level.textContent;
+
+              window.setTimeout(updateBattery, 1000);
+            })
+            .catch(noop);
         }
 
-        updateBattery();
+        if ('getBattery' in navigator) {
+          updateBattery();
+        } else {
+          var nope = document.createElement('p');
+          nope.innerHTML =
+            "Looks like this device doesn't expose the battery level. 😞 But you must have <strong>some</strong> battery left, or you wouldn't be able to see this. 😉";
+
+          app.appendChild(nope);
+        }
       })();
     </script>
   </body>
