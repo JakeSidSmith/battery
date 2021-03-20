@@ -114,14 +114,13 @@
       (function () {
         function noop() {}
 
-        var questionMark = document.getElementById("question-mark");
-        var app = document.getElementById("app");
-        var level = document.getElementById("level");
-        var percentage = document.getElementById("percentage");
-        var time = null;
+        var questionMark = document.getElementById('question-mark');
+        var app = document.getElementById('app');
+        var level = document.getElementById('level');
+        var percentage = document.getElementById('percentage');
 
         function updateBattery() {
-          if ("getBattery" in navigator) {
+          if ('getBattery' in navigator) {
             if (questionMark) {
               questionMark.parentNode.removeChild(questionMark);
               questionMark = null;
@@ -130,31 +129,8 @@
             navigator
               .getBattery()
               .then((result) => {
-                level.textContent = result.level * 100 + "%";
+                level.textContent = result.level * 100 + '%';
                 percentage.style.width = level.textContent;
-
-                if (!time) {
-                  time = document.createElement("p");
-                  app.appendChild(time);
-                }
-
-                var hours = Math.floor(result.dischargingTime / 60 / 60);
-                var minutes = Math.floor(
-                  result.dischargingTime / 60 - hours * 60
-                );
-                var hourText = hours === 1 ? "hour" : "hours";
-                var minuteText = minutes === 1 ? "minute" : "minutes";
-
-                time.innerHTML =
-                  "That's about <strong>" +
-                  hours +
-                  "</strong> " +
-                  hourText +
-                  " and <strong>" +
-                  minutes +
-                  "</strong> " +
-                  minuteText +
-                  ".";
 
                 window.setTimeout(updateBattery, 1000);
               })
